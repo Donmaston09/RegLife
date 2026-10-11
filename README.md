@@ -95,3 +95,12 @@ Casebook events and some scenario events are based on these public reports. They
 - Eating disorder helpline chatbot taken offline (2023) · [report](https://www.kunc.org/npr-news/2023-06-08/an-eating-disorders-chatbot-offered-dieting-advice-raising-fears-about-ai-in-health)
 - Population health algorithm using cost as a proxy for need (Science, 2019) · [summary](https://chmi.berkeley.edu/news/dissecting-racial-bias-in-an-algorithm-used-to-manage-the-health-of-populations)
 - NHS trust websites sharing page-visit data through a tracking pixel (2023) · [report](https://www.digitalhealth.net/2023/05/nhs-could-take-action-against-trusts-for-facebook-breach-spokesman)
+
+## Keeping the content up to date
+
+Regulation changes often, so RegLife treats upkeep as part of the product. The rule is: the machine watches, people decide.
+
+- **Review records.** Every framework, drill, scenario, regulator, risk, change type and update shows when it was last checked and whether an expert has reviewed it. Records live in `src/content/review.ts`. To record an expert review, add an entry such as `'drill:fsn': { lastReviewed: '2027-01-15', reviewer: 'Name, role', status: 'expert' }`.
+- **Regulatory updates log.** `src/content/updates.ts` holds dated changes and coming deadlines, each with a source and the buildings it affects. It feeds the Updates panel and the news ticker. Add new items at the top.
+- **Report an error.** Signed-in learners can report a mistake or a rule change from any framework card, drill, regulator profile, risk or real-case reveal. Reports go to the `content_reports` table (run `supabase/migrations/0005_content_reports.sql`) and can only be read in the Supabase dashboard.
+- **Monthly content check.** `.github/workflows/content-check.yml` runs on the 1st of each month (or on demand from the Actions tab). It flags anything not reviewed for 180 days, broken source links and review records that point at nothing, and opens a GitHub issue labelled `content-check`. Run it locally with `npm run check:content` (add `CHECK_LINKS=1` to test links).

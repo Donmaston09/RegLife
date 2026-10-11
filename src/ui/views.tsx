@@ -12,6 +12,7 @@ import { REGULATORS } from '../content/regulators'
 import { BUILDINGS } from '../content/city'
 import { SCENARIOS } from '../content/scenarios'
 import type { District, Framework } from '../content/types'
+import { ReportButton, ReviewBadge } from './review'
 
 export const Pill = ({ l = '', children }: { l?: string; children: ReactNode }) => <span className={`pill ${l}`}>{children}</span>
 export const Disclaimer = () => (
@@ -100,6 +101,7 @@ export function RiskView({ scope, onOpen }: { scope: 'model' | 'soc'; onOpen: Op
           <details><summary>Controls and monitoring</summary><dl style={{ marginTop: 8 }}>
             <div><dt>Controls</dt><dd><ul className="tight">{r.ctl.map(x => <li key={x}>{x}</li>)}</ul></dd></div>
             <div><dt>Monitor</dt><dd><ul className="tight">{r.mon.map(x => <li key={x}>{x}</li>)}</ul></dd></div></dl></details>
+          <ReviewBadge kind="risk" id={r.n} /><ReportButton kind="risk" id={r.n} label={r.n} />
         </article>))}</div>
       <div className="row"><button className="btn" onClick={() => onOpen(other[0])}>More risks at the {other[1]}</button></div>
       <Disclaimer />
@@ -159,7 +161,8 @@ export const FrameworkCards = ({ list }: { list: Framework[] }) => list.length ?
     <div className="row" style={{ justifyContent: 'space-between' }}><h3>{f.n}</h3><div className="row"><Pill l="ac">{f.j}</Pill><Pill>{f.t}</Pill></div></div>
     <p style={{ fontSize: '.88rem' }}>{f.k}</p>
     <p className="muted" style={{ fontSize: '.8rem' }}><b>Applies when:</b> {f.w}</p>
-    <a href={f.u} target="_blank" rel="noopener noreferrer" style={{ fontSize: '.84rem' }}>Source</a>
+    <div className="row" style={{ justifyContent: 'space-between' }}><a href={f.u} target="_blank" rel="noopener noreferrer" style={{ fontSize: '.84rem' }}>Source</a><ReviewBadge kind="framework" id={f.n} /></div>
+    <ReportButton kind="framework" id={f.n} label={f.n} />
   </article>))}</> : <p className="muted">No frameworks match. Try a broader word.</p>
 
 export function LibraryView() {
@@ -183,6 +186,7 @@ export function RegulatorView({ id }: { id: string }) {
   return (
     <section className="panel">
       <p className="lead">{r.role}</p>
+      <div className="row" style={{ justifyContent: 'space-between' }}><ReviewBadge kind="regulator" id={id} /><ReportButton kind="regulator" id={id} label="this regulator profile" /></div>
       <div className="card stack"><span className="eyebrow">When you deal with them</span><ul className="tight">{r.meet.map(m => <li key={m}>{m}</li>)}</ul></div>
       {clocks.length > 0 && <div className="card"><span className="eyebrow">Deadlines</span>{clocks.map(c => <div className="clock" key={c.n}><span className="t">{c.t}</span><div><b>{c.n}</b><small>{c.d}</small></div></div>)}</div>}
       <div className="stack"><span className="eyebrow">Rules they apply</span><div className="grid g2"><FrameworkCards list={fws} /></div></div>
@@ -234,6 +238,7 @@ export function ScenarioPicker({ onPick }: { onPick: (id: string) => void }) {
           <button className="scen" key={s.id} onClick={() => onPick(s.id)}>
             <span className="eyebrow">{s.events.length} quarters</span><h3>{s.product}: {s.title}</h3>
             <span className="muted" style={{ fontSize: '.86rem' }}>{s.blurb}</span>
+            <ReviewBadge kind="scenario" id={s.id} />
             <span className="row"><Pill l={s.perspective === 'deployer' ? 'lo' : ''}>{s.perspective === 'deployer' ? 'You deploy it' : 'You build it'}</Pill>{s.tags.map(t => <Pill key={t}>{t}</Pill>)}{best >= 0 && <Pill l="lo">Best {best}</Pill>}</span>
           </button>)
       })}</div>

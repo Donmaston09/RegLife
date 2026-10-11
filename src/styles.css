@@ -208,3 +208,9 @@ svg.spark{width:100%;height:70px;display:block}
 .choice[aria-pressed="true"]{border-color:var(--green);background:var(--green-soft)}
 button:disabled{opacity:.5;cursor:not-allowed}
 .land3d.day{color:#1C2733;opacity:.42}
+/* ---- review and reporting ---- */
+.linkbtn{border:0;background:none;padding:0;color:var(--muted);font-size:.8rem;text-decoration:underline;text-underline-offset:2px;justify-self:start;cursor:pointer}
+.linkbtn:hover{color:var(--green)}
+.report{border-top:1px dashed var(--line);padding-top:10px}
+button.ticker{border:0;cursor:pointer;font:inherit;font-size:.82rem;font-weight:600}
+.pw{position:relative;display:block}.pw input{width:100%;padding-right:64px}.pw .linkbtn{position:absolute;right:14px;top:50%;transform:translateY(-50%)}

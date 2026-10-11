@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { DRILLS, LEVELS } from '../content/drills'
 import { progressStore, useProgress } from '../lib/progress'
 import { Disclaimer, Pill } from './views'
+import { ReportButton, ReviewBadge } from './review'
 
 const CONF = ['A guess', 'Fairly sure', 'Certain']
 
@@ -28,7 +29,7 @@ export function DrillsView({ onDocs }: { onDocs: () => void }) {
         <span className="row"><button className="btn ghost" onClick={() => go(i - 1)}>Previous</button><button className="btn ghost" onClick={() => go(i + 1)}>Next</button></span>
       </div>
       <article className="card stack">
-        <span className="eyebrow">Drill {i + 1} · {d.nation} · {d.role}</span>
+        <div className="row" style={{ justifyContent: 'space-between' }}><span className="eyebrow">Drill {i + 1} · {d.nation} · {d.role}</span><ReviewBadge kind="drill" id={d.id} /></div>
         <h3 style={{ fontSize: '1.1rem' }}>{d.title}</h3>
         <p>{d.context}</p>
         <p><b>What changes:</b> {d.change}</p>
@@ -48,6 +49,7 @@ export function DrillsView({ onDocs }: { onDocs: () => void }) {
             <p><b>Expert view: {LEVELS[d.answer].short}.</b> {d.reasoning}</p>
             <div><span className="eyebrow">What to do</span><ul className="tight">{d.actions.map(a => <li key={a}>{a}</li>)}</ul></div>
             <div><span className="eyebrow">Read more</span><ul className="tight">{d.refs.map(r => <li key={r.url + r.text}><a href={r.url} target="_blank" rel="noopener noreferrer">{r.text}</a></li>)}</ul></div>
+            <ReportButton kind="drill" id={d.id} label={`the drill "${d.title}"`} />
           </div>
           <div className="row"><button className="btn primary" onClick={() => go(i + 1)}>Next drill</button><button className="btn" onClick={() => progressStore.clearDrill(d.id)}>Try this one again</button><button className="btn" onClick={onDocs}>Write it up as a change log</button></div>
         </div>

@@ -4,3 +4,4 @@ dist
 .env
 *.log
 tsconfig.tsbuildinfo
+content-report.md

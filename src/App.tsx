@@ -39,6 +39,7 @@ export default function App() {
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/signup" element={<AuthForm mode="signup" />} />
           <Route path="/login" element={<AuthForm mode="signin" />} />
+          <Route path="/reset" element={<AuthForm mode="reset" />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/" element={<RequireAuth><CityPage /></RequireAuth>} />
           <Route path="/account" element={<RequireAuth><Account /></RequireAuth>} />

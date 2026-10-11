@@ -11,13 +11,15 @@ import { useAuth } from '../lib/auth'
 import { hasBackend } from '../lib/supabase'
 import { City2D, GLBoundary, hasWebGL } from '../ui/Fallback'
 import { WorkDocsView, type DocPreset } from '../ui/workdocs'
+import { ReportButton, UpdatesView } from '../ui/review'
+import { tickerLines } from '../content/updates'
 import { DrillsView, TrustView } from '../ui/drills'
 import { AboutView, ChangeView, ClassifyView, DirectoryView, Disclaimer, KC, LibraryView, MonitorView, PeopleView, Pill, RegulatorView, RiskView, ScenarioPicker } from '../ui/views'
 
 const City = lazy(() => import('../three/City'))
 
 interface Sim { id: string; i: number; s: Stats; pending: Choice | null; choices: number[]; over: boolean }
-const NEWS = ['AI Act general application began 2 Aug 2026', 'EU Product Liability Directive applies from 9 Dec 2026', 'UK post-market surveillance rules in force since June 2025', 'Northern Ireland follows EU device rules under the Windsor Framework', 'AI Act duties for device AI due Aug 2027 (delay proposed)', 'New: NHS trust casebook built from real cases', 'New: trigger drills in the Drill Hall', 'New: take-away documents in the Records Office']
+const NEWS = tickerLines()
 
 function Meters({ s }: { s: Stats }) {
   return <>{STATS.map(([k, l]) => { const v = s[k]; const c = v < 30 ? 'hi' : v < 55 ? 'mid' : ''; return (
@@ -38,7 +40,7 @@ export default function CityPage() {
   const switchMode = () => { const m = mode === '3d' ? '2d' : '3d'; setMode(m); try { localStorage.setItem('reglife.mode', m) } catch { /* ignore */ } }
 
   useEffect(() => { document.body.classList.add('city'); return () => document.body.classList.remove('city') }, [])
-  useEffect(() => { const h = location.hash.slice(1); if (h && (BY_ID[h] || ['directory', 'about', 'play', 'docs'].includes(h))) setOpen(h) }, [])
+  useEffect(() => { const h = location.hash.slice(1); if (h && (BY_ID[h] || ['directory', 'about', 'play', 'docs', 'updates'].includes(h))) setOpen(h) }, [])
   useEffect(() => { try { history.replaceState(null, '', open ? '#' + open : location.pathname) } catch { /* ignore */ } if (open && BY_ID[open]) progressStore.visit(open); bodyRef.current?.scrollTo(0, 0) }, [open])
   useEffect(() => {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -72,6 +74,7 @@ export default function CityPage() {
     if (b) { title = b.name; sub = b.sub; code = b.code; col = KC[b.k] }
     if (open === 'directory') { title = 'City directory'; sub = 'All buildings'; code = 'MAP' }
     if (open === 'about') { title = 'About RegLife'; sub = 'Creator and purpose'; code = 'i' }
+    if (open === 'updates') { title = 'Regulatory updates'; sub = 'What has changed and what is coming'; code = 'NEW' }
     if (open === 'play') { title = 'Play your year'; sub = 'Choose a scenario'; code = 'GO' }
     if (open === 'result') { title = 'Your year in review'; sub = scen ? `${scen.product} · ${scen.title}` : ''; code = 'END' }
     if (simHere && ev && sim && scen) {
@@ -83,7 +86,7 @@ export default function CityPage() {
           <div className="outcome" aria-live="polite"><b>{sim.pending.l}</b><p>{sim.pending.r}</p>
             <div className="delta">{Object.entries(sim.pending.d).map(([k, v]) => <span key={k} className={v! > 0 ? 'up' : 'dn'}>{STATS.find(x => x[0] === k)![1]} {v! > 0 ? '+' : ''}{v} · </span>)}</div>
             <div className="lesson">{sim.pending.les}</div>
-            {ev.basis && <div className="basis"><span className="eyebrow">Based on a real case</span><p>{ev.basis.text}</p><a href={ev.basis.url} target="_blank" rel="noopener noreferrer">Read the source</a></div>}</div>
+            {ev.basis && <div className="basis"><span className="eyebrow">Based on a real case</span><p>{ev.basis.text}</p><ReportButton kind="scenario" id={`${scen.id}:${sim.i}`} label={`${scen.product}, ${ev.q}`} /><a href={ev.basis.url} target="_blank" rel="noopener noreferrer">Read the source</a></div>}</div>
           <div className="row"><button className="btn primary" onClick={next}>{sim.i < scen.events.length - 1 && !isBusted(sim.s) ? 'Next quarter' : 'See the result'}</button></div>
         </section>
       ) : (
@@ -111,10 +114,10 @@ export default function CityPage() {
         hq: <ClassifyView onOpen={setOpen} />, lab: <ChangeView onDocs={() => openDocs({ type: 'change' })} />, tower: <MonitorView />, board: <PeopleView />, library: <LibraryView />,
         model: <RiskView key="model" scope="model" onOpen={setOpen} />, soc: <RiskView key="soc" scope="soc" onOpen={setOpen} />,
         directory: <DirectoryView onOpen={setOpen} />, about: <AboutView />, play: <ScenarioPicker onPick={start} />,
-        docs: <WorkDocsView key={preset.type + (preset.product ?? '')} preset={preset} />, drills: <DrillsView onDocs={() => openDocs({ type: 'change' })} />, trust: <TrustView onOpen={id => id === 'docs' ? openDocs({ type: 'vendor' }) : setOpen(id)} />
+        docs: <WorkDocsView key={preset.type + (preset.product ?? '')} preset={preset} />, updates: <UpdatesView onOpen={setOpen} />, drills: <DrillsView onDocs={() => openDocs({ type: 'change' })} />, trust: <TrustView onOpen={id => id === 'docs' ? openDocs({ type: 'vendor' }) : setOpen(id)} />
       }
       content = map[open] ?? (REGULATORS[open] ? <RegulatorView id={open} /> : null)
-      if (ev && !['directory', 'about', 'play'].includes(open)) content = <>
+      if (ev && !['directory', 'about', 'play', 'updates'].includes(open)) content = <>
         <div className="card row" style={{ justifyContent: 'space-between', marginBottom: 14 }}><span>Your next event is at the <b>{BY_ID[ev.b].name}</b>.</span><button className="btn primary" onClick={() => setOpen(ev.b)}>Go there</button></div>{content}</>
     }
   }
@@ -148,7 +151,7 @@ export default function CityPage() {
           <button className="chip" onClick={() => setOpen('about')}><i>BY</i>A. Onoja, Ph.D.</button>
           {session && <Link className="chip c3" to="/educator" style={{ textDecoration: 'none', color: 'inherit' }}><i>TEACH</i>Educator</Link>}
         </div>
-        <div className="ticker" aria-live="polite">{NEWS[ni]}</div>
+        <button className="ticker" aria-live="polite" onClick={() => setOpen('updates')} title="See all regulatory updates">{NEWS[ni % NEWS.length]}</button>
       </div>
 
       {sim && !sim.over && <div className="needs"><Meters s={sim.s} /></div>}
@@ -158,7 +161,7 @@ export default function CityPage() {
           <span><b>Your team</b> · {use2d ? "tap a building" : "drag to explore, tap a building"}</span></div>
         <div className="acts"><button className="btn primary" onClick={onPlay}>{playLabel}</button><button className="btn" onClick={() => setOpen('hq')}>Classify it</button></div>
         <div className="credit">Created by <button onClick={() => setOpen('about')}>Anthony Onoja, Ph.D.</button> · University of Surrey</div>
-        <div className="tools">{[['trust', 'Deployer office'], ['drills', 'Drills'], ['docs', 'Documents'], ['lab', 'Change check'], ['soc', 'Risks'], ['library', 'Frameworks']].map(([id, l]) => <button key={id} onClick={() => setOpen(id)}>{l}</button>)}</div>
+        <div className="tools">{[['updates', 'Updates'], ['trust', 'Deployer office'], ['drills', 'Drills'], ['docs', 'Documents'], ['lab', 'Change check'], ['soc', 'Risks'], ['library', 'Frameworks']].map(([id, l]) => <button key={id} onClick={() => setOpen(id)}>{l}</button>)}</div>
       </div>
 
       {open && (

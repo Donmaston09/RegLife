@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/auth'
 import { progressStore, useProgress } from '../lib/progress'
@@ -59,7 +59,7 @@ export default function Account() {
           <p className="muted" style={{ fontSize: '.86rem' }}>Your educator sees this name in cohort reports.</p>
           <label className="field"><span>Display name</span><input id="dn" value={name} maxLength={80} onChange={e => setName(e.target.value)} /></label>
           <label className="field"><span>Organisation or course</span><input id="org" value={org} maxLength={120} onChange={e => setOrg(e.target.value)} /></label>
-          <div className="row"><button className="btn primary" type="submit">Save profile</button><span className="ok">{saved}</span></div>
+          <div className="row"><button className="btn primary" type="submit">Save profile</button><Link className="btn ghost" to="/reset" style={{ textDecoration: 'none' }}>Change password</Link><span className="ok">{saved}</span></div>
         </form>
         <div className="card stack"><h3>Cohorts</h3>
           <form className="row" onSubmit={join}><label className="field" style={{ flex: 1 }}><span>Join code</span><input id="code" value={code} onChange={e => setCode(e.target.value.toUpperCase())} placeholder="e.g. K7PQ2M" maxLength={6} /></label><button className="btn primary" type="submit" style={{ alignSelf: 'end' }}>Join</button></form>
