@@ -51,7 +51,7 @@ export const BUILDINGS: Building[] = [
 export const BY_ID: Record<string, Building> = Object.fromEntries(BUILDINGS.map(b => [b.id, b]))
 
 export const NOTICE_BOARDS: NoticeBoard[] = [
- {x:18.4,y:4.4,t1:'AI ACT · DEVICES',t2:'Annex I · Aug 2027',go:'aio'},
+ {x:19,y:3.7,t1:'AI ACT · DEVICES',t2:'Annex I · Aug 2027',go:'aio'},
  {x:22.2,y:12,t1:'FDA PCCP',t2:'Plan model changes',go:'fda'},
  {x:18.6,y:23.2,t1:'PRODUCT LIABILITY',t2:'EU PLD · 9 Dec 2026',go:'court'}
 ]
