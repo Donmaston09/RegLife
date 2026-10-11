@@ -45,38 +45,6 @@ npm test           # unit and content-integrity tests
 npm run build      # production build in dist/
 ```
 
-## Turn on accounts and cohorts (Supabase)
-
-1. Create a free project at supabase.com. A UK or EU region is a sensible default for UK learners.
-2. Open **SQL Editor** and run the files in `supabase/migrations/` in order: `0001_init.sql`, `0002_account_rights.sql`, `0003_drills_docs.sql`.
-3. In **Authentication > URL Configuration**, set the Site URL to where the app runs (`http://localhost:5173` while testing, then your Render address) and add the same under Redirect URLs.
-4. In **Authentication > Email Templates > Magic Link**, make sure the email shows the code: add a line such as `Your RegLife code: {{ .Token }}`. Learners type this code, which avoids the "link expired" problem caused by NHS and university email scanners.
-5. In **Authentication > SMTP Settings**, connect a real email service before any class. Supabase's built-in sender is for testing and only sends a few emails an hour.
-6. Copy `.env.example` to `.env.local` and fill in **Project URL** and **anon public key** from **Project Settings > API**.
-7. Restart `npm run dev`. "Sign in" appears in the top bar.
-
-The anon key is designed to be public. All access control is enforced by row level security in the database:
-
-- learners can read and write only their own profile, progress and runs
-- cohort owners read learner data only through `cohort_report()`, which returns nothing to anyone else and only includes runs made after the learner joined
-- outsiders see no cohorts or memberships
-
-`supabase/tests/rls_check.sql` re-runs these checks against a plain Postgres database.
-
-## Deploy on Render
-
-The repository includes `render.yaml`, a Render Blueprint for a free static site.
-
-1. Push this project to GitHub or GitLab.
-2. In Render, choose **New > Blueprint** and connect the repository. Render reads `render.yaml`.
-3. When asked, paste `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, or leave them blank for guest mode. These are baked in at build time, so if you change them later, trigger **Manual Deploy > Clear build cache & deploy**.
-4. After the first deploy, copy your site address (for example `https://reglife.onrender.com`) into Supabase under **Authentication > URL Configuration** as the Site URL and a Redirect URL. Sign-in links will not work until you do this.
-5. Optional: add your own domain under the site's **Settings > Custom Domains**.
-
-The Blueprint rewrites every path to `index.html` so links such as `/educator` and `/join/ABC234` work, caches built assets for a year, and pins Node 20. Static sites on Render do not sleep, unlike free web services.
-
-Any other static host also works if it rewrites unknown paths to `index.html`.
-
 ## Project layout
 
 ```
