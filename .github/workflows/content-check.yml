@@ -1,0 +1,49 @@
+# Monthly check that RegLife's regulatory content is current and its sources still work.
+# Opens (or updates) a GitHub issue when something needs attention.
+name: Content check
+
+on:
+  schedule:
+    - cron: '17 7 1 * *'   # 07:17 UTC on the 1st of each month
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Check reviews and links
+        id: check
+        continue-on-error: true
+        run: npm run check:content
+        env:
+          CHECK_LINKS: '1'
+          REPORT_PATH: content-report.md
+      - name: Open or update an issue if anything needs attention
+        if: steps.check.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs')
+            const body = fs.readFileSync('content-report.md', 'utf8')
+            const title = 'Content check: regulatory content needs attention'
+            const { data: open } = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', labels: 'content-check' })
+            if (open.length) {
+              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: open[0].number, body })
+            } else {
+              await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title, body, labels: ['content-check'] })
+            }
+      - name: Keep the report
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-report
+          path: content-report.md
