@@ -110,7 +110,7 @@ Regulation in this area changes often. Each review cycle, check the framework li
 
 ## Credits
 
-Concept, content and direction: Anthony Onoja, Ph.D., University of Surrey. City format inspired by Lagos Life. Built with React, Three.js, react-three-fiber, drei and Supabase.
+Concept, content and direction: Anthony Onoja, Ph.D., University of Surrey. Built with React, Three.js, react-three-fiber, drei and Supabase.
 
 ## Real cases used
 
