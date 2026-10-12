@@ -1,5 +1,5 @@
-// The 2-minute captioned tour of RegLife. Created by Anthony Onoja, Ph.D., University of Surrey.
-// The video has no sound; captions are burned in, and the steps below are its text alternative.
+// The narrated, captioned video tour of RegLife. Created by Anthony Onoja, Ph.D., University of Surrey.
+// The video is narrated, with captions burned in; the steps below are its text alternative.
 export const DEMO_SRC = '/demo/reglife-demo.mp4'
 export const DEMO_POSTER = '/demo/reglife-demo-poster.jpg'
 
@@ -20,7 +20,7 @@ export function DemoVideo({ steps = true }: { steps?: boolean }) {
         <source src={DEMO_SRC} type="video/mp4" />
         Your browser cannot play this video. <a href={DEMO_SRC}>Download the tour (MP4)</a>.
       </video>
-      <p className="muted" style={{ fontSize: '.8rem' }}>2 minutes 18 seconds · captioned, no sound · <a href={DEMO_SRC} download>Download</a></p>
+      <p className="muted" style={{ fontSize: '.8rem' }}>About 2½ minutes · narrated, with captions · turn your sound on · <a href={DEMO_SRC} download>Download</a></p>
       {steps && (
         <details>
           <summary>What the tour shows</summary>

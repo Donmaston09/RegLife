@@ -19,14 +19,14 @@ Educational tool, not legal advice. Content reflects public rules and guidance a
 
 **Live app:** [reglife.onrender.com](https://reglife.onrender.com)
 
-**New here?** Watch the [2-minute tour](public/demo/reglife-demo.mp4) (captioned, no sound). It also plays on the app's welcome page, opens automatically the first time someone enters the city, and is always available from the **Tour** button.
+**New here?** Watch the [video tour](public/demo/reglife-demo.mp4) (about 2½ minutes, narrated and captioned). It plays on the app's welcome page, and inside the city from the bold **How to use RegLife** button, which pulses gently until the learner has watched it once.
 
 ## Features
 
 | Area | What it does |
 |---|---|
 | 3D city | A 2D map is used automatically on devices without WebGL, and anyone can switch to it. Three.js (react-three-fiber) city with clickable buildings, a moving avatar and a day/night theme that follows the device. Pins are real HTML buttons, so the city works with a keyboard and screen readers. A Directory lists every building. |
-| Tour | A captioned 2-minute demo video (`public/demo/`) on the welcome page and in the city's Tour panel, with a written list of the steps as its text alternative. |
+| Tour | A narrated, captioned demo video (`public/demo/`) on the welcome page and behind the city's **How to use RegLife** button, with a written list of the steps as its text alternative. |
 | Tools | Device classifier, change impact checker, risk register, monitoring, RACI, 37-item framework library, regulator profiles. |
 | Deployer office | The duties of the NHS organisation that deploys AI: a before-you-buy to while-it-is-live checklist across the four UK nations. |
 | Drill Hall | 13 "is this a trigger?" drills from the deployer's side. Learners pick a response level and say how sure they are, then see the expert reasoning, actions and sources. Answers given as "certain" that differ from the experts are flagged for discussion. |
@@ -76,7 +76,7 @@ Copy `src/content/scenarios/mindmate.ts`, change the id and events, and add it t
 
 ### Updating the tour video
 
-Replace `public/demo/reglife-demo.mp4` (H.264 MP4, 1280×720, `-movflags +faststart`, ideally under 8 MB) and `public/demo/reglife-demo-poster.jpg`, then update the steps in `src/ui/DemoVideo.tsx` if the walkthrough changed. Re-record when a screen it shows changes noticeably.
+Replace `public/demo/reglife-demo.mp4` (H.264 MP4, 1280×720, `-movflags +faststart`, with an AAC audio track, ideally under 8 MB) and `public/demo/reglife-demo-poster.jpg`, then update the steps in `src/ui/DemoVideo.tsx` if the walkthrough changed. Re-record when a screen it shows changes noticeably.
 
 ### Keeping content current
 

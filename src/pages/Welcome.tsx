@@ -17,7 +17,7 @@ export default function Welcome() {
       <p className="lead" style={{ fontSize: '1.05rem' }}>Walk through a city of regulators and hospitals, face situations based on real cases, and spot when a change to an AI product changes your legal duties. Built for NHS staff, health technology teams and students across the four UK nations.</p>
       <div className="row"><Link className="btn primary" to={`/signup${q}`} style={{ textDecoration: 'none', padding: '12px 22px' }}>Create a free account</Link><Link className="btn" to={`/login${q}`} style={{ textDecoration: 'none', padding: '12px 22px' }}>Sign in</Link></div>
       <section className="card stack" aria-labelledby="tour">
-        <h2 id="tour" style={{ fontSize: '1.15rem' }}>New here? Watch the 2-minute tour first</h2>
+        <h2 id="tour" style={{ fontSize: '1.15rem' }}>New here? Watch the short video tour first (sound on)</h2>
         <DemoVideo />
       </section>
       <div className="grid g3">

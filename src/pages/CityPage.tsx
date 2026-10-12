@@ -26,7 +26,7 @@ const TOUR_KEY = 'reglife.tourSeen'
 function TourView({ onDone }: { onDone: () => void }) {
   return (
     <section className="panel">
-      <p className="lead">A captioned 2-minute walkthrough of RegLife: how to move around the city and what each part is for. You can come back to it any time from the Tour button at the top.</p>
+      <p className="lead">A narrated, captioned walkthrough (about 2½ minutes) of RegLife: how to move around the city and what each part is for. Turn the sound on: a narrator talks you through each step. You can come back to it any time from the "How to use RegLife" button.</p>
       <DemoVideo />
       <div className="row"><button className="btn primary" onClick={onDone}>Start exploring</button></div>
       <Disclaimer />
@@ -48,6 +48,7 @@ export default function CityPage() {
   const [preset, setPreset] = useState<DocPreset>({ type: 'change' })
   const openDocs = (p: DocPreset) => { setPreset(p); setOpen('docs') }
   const [gl] = useState(() => hasWebGL())
+  const [seen, setSeen] = useState(() => { try { return !!localStorage.getItem(TOUR_KEY) } catch { return false } })
   const [mode, setMode] = useState<'3d' | '2d'>(() => { try { return (localStorage.getItem('reglife.mode') as '3d' | '2d') || '3d' } catch { return '3d' } })
   const use2d = !gl || mode === '2d'
   const switchMode = () => { const m = mode === '3d' ? '2d' : '3d'; setMode(m); try { localStorage.setItem('reglife.mode', m) } catch { /* ignore */ } }
@@ -56,9 +57,8 @@ export default function CityPage() {
   useEffect(() => {
     const h = location.hash.slice(1)
     if (h && (BY_ID[h] || ['directory', 'about', 'play', 'docs', 'updates', 'tour'].includes(h))) setOpen(h)
-    else { try { if (!localStorage.getItem(TOUR_KEY)) setOpen('tour') } catch { /* ignore */ } }
   }, [])
-  useEffect(() => { try { history.replaceState(null, '', open ? '#' + open : location.pathname) } catch { /* ignore */ } if (open && BY_ID[open]) progressStore.visit(open); if (open === 'tour') { try { localStorage.setItem(TOUR_KEY, '1') } catch { /* ignore */ } } bodyRef.current?.scrollTo(0, 0) }, [open])
+  useEffect(() => { try { history.replaceState(null, '', open ? '#' + open : location.pathname) } catch { /* ignore */ } if (open && BY_ID[open]) progressStore.visit(open); if (open === 'tour') { setSeen(true); try { localStorage.setItem(TOUR_KEY, '1') } catch { /* ignore */ } } bodyRef.current?.scrollTo(0, 0) }, [open])
   useEffect(() => {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const t = setInterval(() => setNi(n => (n + 1) % NEWS.length), 5000); return () => clearInterval(t)
@@ -91,7 +91,7 @@ export default function CityPage() {
     if (b) { title = b.name; sub = b.sub; code = b.code; col = KC[b.k] }
     if (open === 'directory') { title = 'City directory'; sub = 'All buildings'; code = 'MAP' }
     if (open === 'about') { title = 'About RegLife'; sub = 'Creator and purpose'; code = 'i' }
-    if (open === 'tour') { title = 'How to use RegLife'; sub = 'Watch the 2-minute tour'; code = '▶' }
+    if (open === 'tour') { title = 'How to use RegLife'; sub = 'Watch the video tour'; code = '▶' }
     if (open === 'updates') { title = 'Regulatory updates'; sub = 'What has changed and what is coming'; code = 'NEW' }
     if (open === 'play') { title = 'Play your year'; sub = 'Choose a scenario'; code = 'GO' }
     if (open === 'result') { title = 'Your year in review'; sub = scen ? `${scen.product} · ${scen.title}` : ''; code = 'END' }
@@ -161,7 +161,6 @@ export default function CityPage() {
           <div className="sp">
             {hasBackend && (session ? <Link className="acct btn ghost" to="/account">{profile?.display_name || 'Account'}</Link> : <Link className="acct btn ghost" to="/login">Sign in</Link>)}
             {gl && <button className="btn ghost" onClick={switchMode} aria-label={mode === '3d' ? 'Switch to the 2D map' : 'Switch to the 3D city'}>{mode === '3d' ? '2D' : '3D'}</button>}
-            <button className="btn ghost" onClick={() => setOpen('tour')} aria-label="Watch the 2-minute tour">Tour</button>
             <button className="btn ghost" onClick={() => setOpen('directory')}>Directory</button>
           </div>
         </div>
@@ -176,6 +175,10 @@ export default function CityPage() {
       {sim && !sim.over && <div className="needs"><Meters s={sim.s} /></div>}
 
       <div className="dock">
+        <button className={'tourcta' + (seen ? '' : ' new')} onClick={() => setOpen('tour')}>
+          <span className="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor" /></svg></span>
+          <span><b>How to use RegLife</b><small>Watch the short video tour, with narration</small></span>
+        </button>
         <div className="who"><div className="faces"><span style={{ background: 'var(--c-own)' }}>RA</span><span style={{ background: 'var(--c-uk)' }}>CSO</span><span style={{ background: 'var(--c-us)' }}>ML</span><span style={{ background: 'var(--c-care)' }}>DPO</span></div>
           <span><b>Your team</b> · {use2d ? "tap a building" : "drag to explore, tap a building"}</span></div>
         <div className="acts"><button className="btn primary" onClick={onPlay}>{playLabel}</button><button className="btn" onClick={() => setOpen('hq')}>Classify it</button></div>
