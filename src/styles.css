@@ -214,3 +214,9 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .report{border-top:1px dashed var(--line);padding-top:10px}
 button.ticker{border:0;cursor:pointer;font:inherit;font-size:.82rem;font-weight:600}
 .pw{position:relative;display:block}.pw input{width:100%;padding-right:64px}.pw .linkbtn{position:absolute;right:14px;top:50%;transform:translateY(-50%)}
+
+/* Demo tour video */
+.demovid { width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; background: #0f1a14; display: block; border: 1px solid var(--line) }
+.demosteps { margin: 8px 0 0; padding-left: 1.2rem; font-size: .88rem; display: grid; gap: 6px }
+@media (max-width:480px){ .live{display:none} .bar{gap:6px;padding-left:12px} .bar .sp .btn{padding-left:10px;padding-right:10px} .bar .acct{max-width:84px;overflow:hidden;text-overflow:ellipsis} }
+@media (max-width:420px){ .bar .brand{font-size:0;gap:0} }

@@ -12,6 +12,7 @@ import { hasBackend } from '../lib/supabase'
 import { City2D, GLBoundary, hasWebGL } from '../ui/Fallback'
 import { WorkDocsView, type DocPreset } from '../ui/workdocs'
 import { ReportButton, UpdatesView } from '../ui/review'
+import { DemoVideo } from '../ui/DemoVideo'
 import { tickerLines } from '../content/updates'
 import { DrillsView, TrustView } from '../ui/drills'
 import { AboutView, ChangeView, ClassifyView, DirectoryView, Disclaimer, KC, LibraryView, MonitorView, PeopleView, Pill, RegulatorView, RiskView, ScenarioPicker } from '../ui/views'
@@ -20,6 +21,18 @@ const City = lazy(() => import('../three/City'))
 
 interface Sim { id: string; i: number; s: Stats; pending: Choice | null; choices: number[]; over: boolean }
 const NEWS = tickerLines()
+const TOUR_KEY = 'reglife.tourSeen'
+
+function TourView({ onDone }: { onDone: () => void }) {
+  return (
+    <section className="panel">
+      <p className="lead">A captioned 2-minute walkthrough of RegLife: how to move around the city and what each part is for. You can come back to it any time from the Tour button at the top.</p>
+      <DemoVideo />
+      <div className="row"><button className="btn primary" onClick={onDone}>Start exploring</button></div>
+      <Disclaimer />
+    </section>
+  )
+}
 
 function Meters({ s }: { s: Stats }) {
   return <>{STATS.map(([k, l]) => { const v = s[k]; const c = v < 30 ? 'hi' : v < 55 ? 'mid' : ''; return (
@@ -40,8 +53,12 @@ export default function CityPage() {
   const switchMode = () => { const m = mode === '3d' ? '2d' : '3d'; setMode(m); try { localStorage.setItem('reglife.mode', m) } catch { /* ignore */ } }
 
   useEffect(() => { document.body.classList.add('city'); return () => document.body.classList.remove('city') }, [])
-  useEffect(() => { const h = location.hash.slice(1); if (h && (BY_ID[h] || ['directory', 'about', 'play', 'docs', 'updates'].includes(h))) setOpen(h) }, [])
-  useEffect(() => { try { history.replaceState(null, '', open ? '#' + open : location.pathname) } catch { /* ignore */ } if (open && BY_ID[open]) progressStore.visit(open); bodyRef.current?.scrollTo(0, 0) }, [open])
+  useEffect(() => {
+    const h = location.hash.slice(1)
+    if (h && (BY_ID[h] || ['directory', 'about', 'play', 'docs', 'updates', 'tour'].includes(h))) setOpen(h)
+    else { try { if (!localStorage.getItem(TOUR_KEY)) setOpen('tour') } catch { /* ignore */ } }
+  }, [])
+  useEffect(() => { try { history.replaceState(null, '', open ? '#' + open : location.pathname) } catch { /* ignore */ } if (open && BY_ID[open]) progressStore.visit(open); if (open === 'tour') { try { localStorage.setItem(TOUR_KEY, '1') } catch { /* ignore */ } } bodyRef.current?.scrollTo(0, 0) }, [open])
   useEffect(() => {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const t = setInterval(() => setNi(n => (n + 1) % NEWS.length), 5000); return () => clearInterval(t)
@@ -74,6 +91,7 @@ export default function CityPage() {
     if (b) { title = b.name; sub = b.sub; code = b.code; col = KC[b.k] }
     if (open === 'directory') { title = 'City directory'; sub = 'All buildings'; code = 'MAP' }
     if (open === 'about') { title = 'About RegLife'; sub = 'Creator and purpose'; code = 'i' }
+    if (open === 'tour') { title = 'How to use RegLife'; sub = 'Watch the 2-minute tour'; code = '▶' }
     if (open === 'updates') { title = 'Regulatory updates'; sub = 'What has changed and what is coming'; code = 'NEW' }
     if (open === 'play') { title = 'Play your year'; sub = 'Choose a scenario'; code = 'GO' }
     if (open === 'result') { title = 'Your year in review'; sub = scen ? `${scen.product} · ${scen.title}` : ''; code = 'END' }
@@ -113,11 +131,11 @@ export default function CityPage() {
       const map: Record<string, ReactNode> = {
         hq: <ClassifyView onOpen={setOpen} />, lab: <ChangeView onDocs={() => openDocs({ type: 'change' })} />, tower: <MonitorView />, board: <PeopleView />, library: <LibraryView />,
         model: <RiskView key="model" scope="model" onOpen={setOpen} />, soc: <RiskView key="soc" scope="soc" onOpen={setOpen} />,
-        directory: <DirectoryView onOpen={setOpen} />, about: <AboutView />, play: <ScenarioPicker onPick={start} />,
+        directory: <DirectoryView onOpen={setOpen} />, about: <AboutView />, tour: <TourView onDone={() => setOpen(null)} />, play: <ScenarioPicker onPick={start} />,
         docs: <WorkDocsView key={preset.type + (preset.product ?? '')} preset={preset} />, updates: <UpdatesView onOpen={setOpen} />, drills: <DrillsView onDocs={() => openDocs({ type: 'change' })} />, trust: <TrustView onOpen={id => id === 'docs' ? openDocs({ type: 'vendor' }) : setOpen(id)} />
       }
       content = map[open] ?? (REGULATORS[open] ? <RegulatorView id={open} /> : null)
-      if (ev && !['directory', 'about', 'play', 'updates'].includes(open)) content = <>
+      if (ev && !['directory', 'about', 'play', 'updates', 'tour'].includes(open)) content = <>
         <div className="card row" style={{ justifyContent: 'space-between', marginBottom: 14 }}><span>Your next event is at the <b>{BY_ID[ev.b].name}</b>.</span><button className="btn primary" onClick={() => setOpen(ev.b)}>Go there</button></div>{content}</>
     }
   }
@@ -143,6 +161,7 @@ export default function CityPage() {
           <div className="sp">
             {hasBackend && (session ? <Link className="acct btn ghost" to="/account">{profile?.display_name || 'Account'}</Link> : <Link className="acct btn ghost" to="/login">Sign in</Link>)}
             {gl && <button className="btn ghost" onClick={switchMode} aria-label={mode === '3d' ? 'Switch to the 2D map' : 'Switch to the 3D city'}>{mode === '3d' ? '2D' : '3D'}</button>}
+            <button className="btn ghost" onClick={() => setOpen('tour')} aria-label="Watch the 2-minute tour">Tour</button>
             <button className="btn ghost" onClick={() => setOpen('directory')}>Directory</button>
           </div>
         </div>

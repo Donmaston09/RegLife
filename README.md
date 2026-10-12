@@ -17,17 +17,22 @@ Learners walk a fictional AI product around a city of regulators (MHRA, ICO, NHS
 
 Educational tool, not legal advice. Content reflects public rules and guidance as of mid-2026.
 
+**Live app:** [reglife.onrender.com](https://reglife.onrender.com)
+
+**New here?** Watch the [2-minute tour](public/demo/reglife-demo.mp4) (captioned, no sound). It also plays on the app's welcome page, opens automatically the first time someone enters the city, and is always available from the **Tour** button.
+
 ## Features
 
 | Area | What it does |
 |---|---|
 | 3D city | A 2D map is used automatically on devices without WebGL, and anyone can switch to it. Three.js (react-three-fiber) city with clickable buildings, a moving avatar and a day/night theme that follows the device. Pins are real HTML buttons, so the city works with a keyboard and screen readers. A Directory lists every building. |
+| Tour | A captioned 2-minute demo video (`public/demo/`) on the welcome page and in the city's Tour panel, with a written list of the steps as its text alternative. |
 | Tools | Device classifier, change impact checker, risk register, monitoring, RACI, 37-item framework library, regulator profiles. |
 | Deployer office | The duties of the NHS organisation that deploys AI: a before-you-buy to while-it-is-live checklist across the four UK nations. |
 | Drill Hall | 13 "is this a trigger?" drills from the deployer's side. Learners pick a response level and say how sure they are, then see the expert reasoning, actions and sources. Answers given as "certain" that differ from the experts are flagged for discussion. |
 | Records Office | Take-away work documents pre-filled from what the learner did: a change impact log entry, a DCB0129/DCB0160-style hazard log line (with CSV row) and a list of questions for the supplier. Downloads open in Word. |
 | Scenarios | Five simulations. **Northfield NHS Trust casebook**: eight quarters from the deployer's side, each based on an anonymised real public case that is revealed, with its source, after the learner decides. Plus four manufacturer scenarios, several with real-case reveals: **TriageMate** (GenAI symptom triage), **MindMate** (mental health chatbot), **LungSight** (chest X-ray imaging AI), **ScribeWell** (ambient voice scribe). |
-| Accounts | With Supabase connected, visitors see a welcome page and must create an account (name, optional organisation, email, privacy consent) or sign in before using the app. Email sign-in with a typed 6-digit code (or link) through Supabase Auth. Guest progress is merged into the account on first sign-in. Learners can download their data or delete their account. |
+| Accounts | With Supabase connected, visitors see a welcome page (with the tour video) and must create an account (name, optional organisation, email, password, privacy consent) or sign in with email and password before using the app. New accounts confirm their email once with a 6-digit code; forgotten passwords are reset with a code. Guest progress is merged into the account on first sign-in. Learners can download their data or delete their account. |
 | Saved progress | Buildings visited, classifier answers, planned changes and every scenario run. |
 | Cohorts | Educators create a cohort and share a 6-character code or join link. |
 | Educator dashboard | Learners, activity, city explored, best score per scenario, weakest area, drill answers matching experts, confident-but-different answers, documents made, average score by scenario, CSV export. Educators only see data from the date each learner joined. |
@@ -56,6 +61,8 @@ src/
     scenarios/        one file per scenario pack
   three/City.tsx      the 3D city
   ui/views.tsx        building panels
+  ui/DemoVideo.tsx    the tour video and its step list
+public/demo/          tour video (MP4) and poster image
   pages/              city, sign-in, account, join, educator dashboard
   lib/                classifier, scoring, progress sync, Supabase client, cohorts
 supabase/
@@ -66,6 +73,10 @@ supabase/
 ### Adding a scenario
 
 Copy `src/content/scenarios/mindmate.ts`, change the id and events, and add it to `src/content/scenarios/index.ts`. Each event's `b` must be a building id from `src/content/city.ts`; `npm test` checks this.
+
+### Updating the tour video
+
+Replace `public/demo/reglife-demo.mp4` (H.264 MP4, 1280×720, `-movflags +faststart`, ideally under 8 MB) and `public/demo/reglife-demo-poster.jpg`, then update the steps in `src/ui/DemoVideo.tsx` if the walkthrough changed. Re-record when a screen it shows changes noticeably.
 
 ### Keeping content current
 

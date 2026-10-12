@@ -25,11 +25,13 @@ function PasswordField({ id, label, value, set, autoComplete }: { id: string; la
 }
 
 const friendly = (m: string): string => {
-  if (/invalid login credentials/i.test(m)) return 'That email and password do not match. Check them, or reset your password.'
-  if (/rate limit|too many/i.test(m)) return 'Too many emails have been sent recently. Wait a few minutes and try again.'
+  if (/invalid login credentials/i.test(m)) return 'That email and password do not match. Check them, or reset your password. If you joined before passwords were added, use "Forgot your password?" to set one.'
+  if (/email rate limit|over_email_send_rate_limit/i.test(m)) return 'The sign-up email could not be sent because the site has reached its email limit for this hour. Try again later. (Site owner: set up custom SMTP in Supabase.)'
+  if (/not authori[sz]ed/i.test(m)) return 'The site cannot send email to this address yet. (Site owner: set up custom SMTP in Supabase.)'
+  if (/rate limit|too many|only request this after/i.test(m)) return `Too many attempts in a short time. Wait a few minutes and try again. (${m})`
   if (/already registered|already exists/i.test(m)) return 'An account with this email already exists. Sign in instead, or reset your password.'
   if (/password should be|weak/i.test(m)) return `Choose a stronger password of at least ${MIN_PW} characters.`
-  if (/token has expired|invalid/i.test(m)) return 'That code did not work. Check it matches the latest email, or send a new one.'
+  if (/token has expired|otp.*(expired|invalid)|invalid.*(otp|token)/i.test(m)) return 'That code did not work. Check it matches the latest email, or send a new one.'
   return m
 }
 

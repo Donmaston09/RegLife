@@ -5,3 +5,4 @@ dist
 *.log
 tsconfig.tsbuildinfo
 content-report.md
+/RegLife_demo.mp4

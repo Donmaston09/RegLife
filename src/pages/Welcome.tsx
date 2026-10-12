@@ -2,6 +2,7 @@
 import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { safeNext } from '../lib/safety'
+import { DemoVideo } from '../ui/DemoVideo'
 
 export default function Welcome() {
   const { session } = useAuth()
@@ -15,6 +16,10 @@ export default function Welcome() {
       <h1 style={{ fontSize: '2rem' }}>Practise the decisions that keep health AI safe and lawful</h1>
       <p className="lead" style={{ fontSize: '1.05rem' }}>Walk through a city of regulators and hospitals, face situations based on real cases, and spot when a change to an AI product changes your legal duties. Built for NHS staff, health technology teams and students across the four UK nations.</p>
       <div className="row"><Link className="btn primary" to={`/signup${q}`} style={{ textDecoration: 'none', padding: '12px 22px' }}>Create a free account</Link><Link className="btn" to={`/login${q}`} style={{ textDecoration: 'none', padding: '12px 22px' }}>Sign in</Link></div>
+      <section className="card stack" aria-labelledby="tour">
+        <h2 id="tour" style={{ fontSize: '1.15rem' }}>New here? Watch the 2-minute tour first</h2>
+        <DemoVideo />
+      </section>
       <div className="grid g3">
         <div className="card stack"><h3>Is this a trigger?</h3><p className="muted" style={{ fontSize: '.88rem' }}>Short drills from the deployer's side, with expert reasoning.</p></div>
         <div className="card stack"><h3>Real cases</h3><p className="muted" style={{ fontSize: '.88rem' }}>An NHS trust casebook built from public incidents and rulings.</p></div>
